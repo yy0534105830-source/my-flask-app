@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לוח בקרה וניהול האתר</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header-bar h1 {
+            font-size: 24px;
+            color: #3b82f6;
+        }
+
+        .header-bar a {
+            color: #ef4444;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid #ef4444;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        .section-box {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #334155;
+        }
+
+        .section-box h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #38bdf8;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        input[type="text"],
+        input[type="color"],
+        textarea,
+        input[type="file"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: white;
+            font-family: inherit;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: fit-content;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+        }
+
+        /* טבלאות */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #334155;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: #38bdf8;
+        }
+
+        /* רשימת משבצות לעריכה */
+        .slots-manage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+        }
+
+        .slot-edit-card {
+            background-color: #0f172a;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <h1>לוח בקרה וניהול האתר</h1>
+        <div>
+            <a href="/" target="_blank" style="color: #38bdf8; border-color: #38bdf8; margin-left: 10px;">צפה באתר</a>
+            <a href="/logout">התנתק</a>
+        </div>
+    </div>
+
+    <!-- הגדרות עיצוב וכללי -->
+    <div class="section-box">
+        <h2>הגדרות כלליות ועיצוב האתר</h2>
+        <form action="/admin/update_settings" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>שם האתר (בכותרת הקבועה):</label>
+                    <input type="text" name="site_title" value="{{ settings.site_title }}">
+                </div>
+                <div class="form-group">
+                    <label>כותרת ראשית בדף הבית:</label>
+                    <input type="text" name="main_title" value="{{ settings.main_title }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>תקציר ראשים בדף הבית:</label>
+                <textarea name="main_summary" rows="2">{{ settings.main_summary }}</textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>צבע רקע האתר:</label>
+                    <input type="color" name="bg_color" value="{{ settings.bg_color }}">
+                </div>
+                <div class="form-group">
+                    <label>צבע רקע כרטיסיות/כותרת:</label>
+                    <input type="color" name="card_bg" value="{{ settings.card_bg }}">
+                </div>
+                <div class="form-group">
+                    <label>צבע דגש מרכזי:</label>
+                    <input type="color" name="primary_color" value="{{ settings.primary_color }}">
+                </div>
+            </div>
+
+            <button type="submit">שמור הגדרות עיצוב</button>
+        </form>
+    </div>
+
+    <!-- הוספת משבצת / ריבוע חדש -->
+    <div class="section-box">
+        <h2>הוספת משבצת (ריבוע) חדשה</h2>
+        <form action="/admin/add_slot" method="POST" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>כותרת המשבצת:</label>
+                    <input type="text" name="title" required placeholder="לדוגמה: כתבה חדשה">
+                </div>
+                <div class="form-group">
+                    <label>קטגוריה:</label>
+                    <input type="text" name="category" placeholder="לדוגמה: חדשות / טכנולוגיה">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>רוחב המשבצת (למשל: 300px או 45%):</label>
+                    <input type="text" name="width_val" value="300px" required>
+                </div>
+                <div class="form-group">
+                    <label>גובה מינימלי (למשל: 350px):</label>
+                    <input type="text" name="height_val" value="350px" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>תוכן המשבצת:</label>
+                <textarea name="content" rows="3" placeholder="הכנס את תוכן המשבצת כאן..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>תמונה (אופציונלי):</label>
+                <input type="file" name="image">
+            </div>
+
+            <button type="submit" style="background-color: #10b981;">+ הוסף משבצת חדשה</button>
+        </form>
+    </div>
+
+    <!-- ניהול ועריכת משבצות קיימות -->
+    <div class="section-box">
+        <h2>עריכה ושינוי גודל משבצות קיימות</h2>
+        <div class="slots-manage-grid">
+            {% for slot in slots %}
+            <div class="slot-edit-card">
+                <form action="/admin/edit_slot/{{ slot.slot_id }}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>כותרת:</label>
+                        <input type="text" name="title" value="{{ slot.title }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>קטגוריה:</label>
+                        <input type="text" name="category" value="{{ slot.category }}">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>רוחב:</label>
+                            <input type="text" name="width_val" value="{{ slot.width_val or '300px' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>גובה:</label>
+                            <input type="text" name="height_val" value="{{ slot.height_val or '350px' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>תוכן:</label>
+                        <textarea name="content" rows="3">{{ slot.content }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>החלף תמונה:</label>
+                        <input type="file" name="image">
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <button type="submit">עדכן משבצת</button>
+                        <a href="/admin/delete_slot/{{ slot.slot_id }}" onclick="return confirm('האם למחוק משבצת זו?')" class="btn-danger" style="padding: 8px 12px; border-radius: 4px; text-decoration: none; color: white; font-size: 13px; font-weight: bold;">מחק</a>
+                    </div>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ניהול מבזקים -->
+    <div class="section-box">
+        <h2>ניהול מבזקים</h2>
+        <form action="/admin/add_ticker" method="POST" style="margin-bottom: 15px;">
+            <div class="form-group">
+                <label>הוסף מבזק חדש:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" name="ticker_text" placeholder="טקסט המבזק..." required style="flex: 1;">
+                    <button type="submit">הוסף מבזק</button>
+                </div>
+            </div>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>מזהה</th>
+                    <th>תוכן המבזק</th>
+                    <th>פעולות</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in ticker %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.text }}</td>
+                    <td>
+                        <a href="/admin/delete_ticker/{{ item.id }}" onclick="return confirm('למחוק מבזק זה?')" style="color: #ef4444; text-decoration: none; font-weight: bold;">מחק</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- צפייה בפניות משתמשים -->
+    <div class="section-box">
+        <h2>פניות שנשלחו מהאתר</h2>
+        {% if messages %}
+        <table>
+            <thead>
+                <tr>
+                    <th>תאריך</th>
+                    <th>שם</th>
+                    <th>אימייל</th>
+                    <th>תוכן ההודעה</th>
+                    <th>פעולות</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in messages %}
+                <tr>
+                    <td>{{ msg.created_at }}</td>
+                    <td>{{ msg.name }}</td>
+                    <td>{{ msg.email }}</td>
+                    <td>{{ msg.message }}</td>
+                    <td>
+                        <a href="/admin/delete_message/{{ msg.id }}" onclick="return confirm('למחוק פנייה זו?')" style="color: #ef4444; text-decoration: none; font-weight: bold;">מחק פנייה</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #94a3b8;">אין פניות חדשות כרגע.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

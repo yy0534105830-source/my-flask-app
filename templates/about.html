@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אודות - האתר שלי</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-logo">האתר שלי</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">דף הבית</a></li>
+                <li><a href="{{ url_for('about') }}">אודות</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>אודות האתר</h1>
+        <p>זהו עמוד אודות נפרד שנטען באמצעות תבנית HTML ייעודית ב-Flask.</p>
+    </div>
+
+</body>
+</html>

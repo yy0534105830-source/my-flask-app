@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- שימוש נכון במשתנה slot עבור כותרת הכתבה -->
+    <title>{{ slot.title }} - {{ settings.site_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="background-color: {{ settings.bg_color }}; color: #f8fafc; font-family: 'Assistant', sans-serif; padding: 20px;">
+
+    <div style="max-width: 800px; margin: 40px auto; background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+        
+        <a href="{{ url_for('home') }}" style="color: #38bdf8; text-decoration: none; font-size: 0.9rem;">← חזרה לדף הבית</a>
+        
+        <div style="margin-top: 15px;">
+            <span style="background: #6366f1; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem;">
+                {{ slot.category }}
+            </span>
+        </div>
+
+        <h1 style="color: #818cf8; margin-top: 15px;">{{ slot.title }}</h1>
+
+        {% if slot.image %}
+        <div style="margin: 20px 0; text-align: center;">
+            <img src="{{ url_for('static', filename=slot.image) }}" alt="{{ slot.title }}" style="max-width: 100%; height: auto; border-radius: 8px; max-height: 400px; object-fit: cover;">
+        </div>
+        {% endif %}
+
+        <div style="line-height: 1.8; font-size: 1.1rem; color: #e2e8f0; margin-top: 20px;">
+            <p>{{ slot.content }}</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

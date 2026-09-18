@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התחברות ללוח הניהול</title>
+</head>
+<body style="background: #0f172a; color: #f8fafc; font-family: 'Assistant', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+
+    <div style="background: rgba(30, 41, 59, 0.9); padding: 30px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 380px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);">
+        <h2 style="margin-top: 0; text-align: center; color: #6366f1; margin-bottom: 20px;">כניסת מנהל</h2>
+        
+        {% if error %}
+        <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 10px; border-radius: 6px; margin-bottom: 15px; text-align: center; font-size: 0.9rem;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">שם משתמש:</label>
+                <input type="text" name="username" required style="width: 100%; padding: 10px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">סיסמה:</label>
+                <input type="password" name="password" required style="width: 100%; padding: 10px; border-radius: 6px; background: #1e293b; color: #fff; border: 1px solid #475569; box-sizing: border-box;">
+            </div>
+
+            <button type="submit" style="width: 100%; background: #6366f1; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem;">התחבר</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="{{ url_for('home') }}" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem;">← חזור לדף הבית</a>
+        </div>
+    </div>
+
+</body>
+</html>

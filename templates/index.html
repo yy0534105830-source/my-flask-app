@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ settings.site_title }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: {{ settings.bg_color }};
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            padding-top: 120px;
+        }
+
+        /* כותרת עליונה קבועה */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: {{ settings.card_bg }};
+            border-bottom: 2px solid {{ settings.primary_color }};
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .header-brand h1 {
+            font-size: 20px;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+
+        .header-brand .main-title-header {
+            font-size: 16px;
+            color: {{ settings.primary_color }};
+            font-weight: bold;
+            border-right: 2px solid #334155;
+            padding-right: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        header a.login-btn {
+            color: {{ settings.primary_color }};
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid {{ settings.primary_color }};
+            padding: 6px 14px;
+            border-radius: 4px;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+
+        header a.login-btn:hover {
+            background-color: {{ settings.primary_color }};
+            color: #ffffff;
+        }
+
+        /* פס מבזקים */
+        .ticker-bar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            height: 35px;
+            background-color: #000000;
+            color: #ffcc00;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 999;
+            font-size: 14px;
+        }
+
+        .ticker-title {
+            background-color: {{ settings.primary_color }};
+            color: #ffffff;
+            padding: 0 12px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .ticker-text {
+            display: inline-block;
+            padding-right: 100%;
+            animation: ticker 25s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(100%, 0, 0); }
+        }
+
+        /* Container ראשי - מנוצל לרוחב כמעט מלא */
+        .container {
+            width: 96%;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 10px 40px 10px;
+        }
+
+        /* הגדרת גריד מרכזי למשבצות */
+        .slots-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        /* חלק עליון ימין: משבצת אחת גדולה */
+        .top-section-right {
+            grid-column: 1;
+        }
+
+        .top-section-right .slot-card {
+            height: 100%;
+            min-height: 440px;
+        }
+
+        /* חלק עליון שמאל: 2 משבצות אחת מעל השנייה */
+        .top-section-left {
+            grid-column: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .top-section-left .slot-card {
+            flex: 1;
+            min-height: 210px;
+        }
+
+        /* חלק תחתון: שורות דינמיות של 4 משבצות */
+        .bottom-rows {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .bottom-rows .slot-card {
+            min-height: 220px;
+        }
+
+        /* עיצוב הכרטיסיות */
+        .slot-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slot-card {
+            position: relative;
+            background-color: {{ settings.card_bg }};
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .slot-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .full-bg-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            z-index: 1;
+        }
+
+        .slot-content-overlay {
+            position: relative;
+            z-index: 2;
+            padding: 20px 15px 15px 15px;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 60%, rgba(15, 23, 42, 0) 100%);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slot-card .category {
+            font-size: 12px;
+            color: {{ settings.primary_color }};
+            font-weight: bold;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .slot-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .slot-card p {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* טופס פניות */
+        .contact-section {
+            margin-top: 50px;
+            background-color: {{ settings.card_bg }};
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #334155;
+        }
+
+        .contact-section h3 {
+            margin-bottom: 15px;
+            color: {{ settings.primary_color }};
+            text-align: center;
+        }
+
+        .contact-section form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contact-section input, 
+        .contact-section textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: white;
+            font-family: inherit;
+        }
+
+        .contact-section button {
+            padding: 10px;
+            background-color: {{ settings.primary_color }};
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .contact-section button:hover {
+            opacity: 0.9;
+        }
+
+        /* התאמה למסכים ניידים */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 0 10px 30px 10px;
+            }
+
+            .slots-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-section-right,
+            .top-section-left,
+            .bottom-rows {
+                grid-column: 1;
+            }
+
+            .bottom-rows {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- כותרת עליונה קבועה -->
+    <header>
+        <div class="header-brand">
+            <h1>{{ settings.site_title }}</h1>
+            <span class="main-title-header">{{ settings.main_title }}</span>
+        </div>
+        <a href="/login" class="login-btn">התחברות לניהול</a>
+    </header>
+
+    <!-- פס מבזקים -->
+    {% if ticker %}
+    <div class="ticker-bar">
+        <div class="ticker-title">מבזקים</div>
+        <div class="ticker-text">
+            {% for item in ticker %}
+                <span>• {{ item.text }} </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="slots-grid">
+            
+            <!-- משבצת 1: ימין גדולה -->
+            {% if slots|length > 0 %}
+            <div class="top-section-right">
+                <a href="/article/{{ slots[0].slot_id }}" class="slot-link">
+                    <div class="slot-card" style="{% if slots[0].height %}min-height: {{ slots[0].height }}px;{% endif %}">
+                        {% if slots[0].image %}
+                            <img src="{{ url_for('static', filename=slots[0].image) }}" alt="{{ slots[0].title }}" class="full-bg-img">
+                        {% endif %}
+                        <div class="slot-content-overlay">
+                            <div class="category">{{ slots[0].category }}</div>
+                            <h3>{{ slots[0].title }}</h3>
+                            <p>{{ slots[0].content }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- משבצות 2 ו-3: משמאל (אחת מעל השנייה) -->
+            <div class="top-section-left">
+                {% if slots|length > 1 %}
+                <a href="/article/{{ slots[1].slot_id }}" class="slot-link">
+                    <div class="slot-card" style="{% if slots[1].height %}min-height: {{ slots[1].height }}px;{% endif %}">
+                        {% if slots[1].image %}
+                            <img src="{{ url_for('static', filename=slots[1].image) }}" alt="{{ slots[1].title }}" class="full-bg-img">
+                        {% endif %}
+                        <div class="slot-content-overlay">
+                            <div class="category">{{ slots[1].category }}</div>
+                            <h3>{{ slots[1].title }}</h3>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+
+                {% if slots|length > 2 %}
+                <a href="/article/{{ slots[2].slot_id }}" class="slot-link">
+                    <div class="slot-card" style="{% if slots[2].height %}min-height: {{ slots[2].height }}px;{% endif %}">
+                        {% if slots[2].image %}
+                            <img src="{{ url_for('static', filename=slots[2].image) }}" alt="{{ slots[2].title }}" class="full-bg-img">
+                        {% endif %}
+                        <div class="slot-content-overlay">
+                            <div class="category">{{ slots[2].category }}</div>
+                            <h3>{{ slots[2].title }}</h3>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- שאר המשבצות (מ-4 והלאה): מופיעות למטה ב-4 עמודות באופן אוטומטי -->
+            {% if slots|length > 3 %}
+            <div class="bottom-rows">
+                {% for slot in slots[3:] %}
+                <a href="/article/{{ slot.slot_id }}" class="slot-link">
+                    <div class="slot-card" style="{% if slot.height %}min-height: {{ slot.height }}px;{% endif %}">
+                        {% if slot.image %}
+                            <img src="{{ url_for('static', filename=slot.image) }}" alt="{{ slot.title }}" class="full-bg-img">
+                        {% endif %}
+                        <div class="slot-content-overlay">
+                            <div class="category">{{ slot.category }}</div>
+                            <h3>{{ slot.title }}</h3>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- טופס פניות -->
+        <div class="contact-section">
+            <h3>צור קשר / שלח פנייה</h3>
+            <form action="/" method="POST">
+                <input type="text" name="name" placeholder="שם מלא" required>
+                <input type="email" name="email" placeholder="אימייל" required>
+                <textarea name="message" rows="4" placeholder="תוכן הפנייה..." required></textarea>
+                <button type="submit">שלח פנייה</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
